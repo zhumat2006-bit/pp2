@@ -42,6 +42,12 @@
         "coins": 16
     },
     {
+        "name": "dastan",
+        "score": 1150,
+        "distance": 929,
+        "coins": 3
+    },
+    {
         "name": "zhumat",
         "score": 1117,
         "distance": 1176,
@@ -52,11 +58,5 @@
         "score": 994,
         "distance": 800,
         "coins": 19
-    },
-    {
-        "name": "zhanel",
-        "score": 744,
-        "distance": 604,
-        "coins": 14
     }
 ]
