@@ -1,5 +1,11 @@
 [
     {
+        "name": "h",
+        "score": 3954,
+        "distance": 3000,
+        "coins": 58
+    },
+    {
         "name": "zhumat",
         "score": 2761,
         "distance": 3001,
@@ -42,21 +48,15 @@
         "coins": 16
     },
     {
+        "name": "h",
+        "score": 1208,
+        "distance": 812,
+        "coins": 20
+    },
+    {
         "name": "dastan",
         "score": 1150,
         "distance": 929,
         "coins": 3
-    },
-    {
-        "name": "zhumat",
-        "score": 1117,
-        "distance": 1176,
-        "coins": 2
-    },
-    {
-        "name": "Aibol",
-        "score": 994,
-        "distance": 800,
-        "coins": 19
     }
 ]
