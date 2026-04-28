@@ -5,8 +5,7 @@ from datetime import datetime
 
 p.init()
 
-# --- Screen & Icons ---
-# Ensure "images/icon_paint.png" exists or update the path
+# экран и иконки
 try:
     icon = p.image.load("images/icon_paint.png")
     p.display.set_icon(icon)
@@ -20,12 +19,12 @@ clock = p.time.Clock()
 font = p.font.SysFont("Arial", 12, bold=True)
 large_font = p.font.SysFont("Arial", 18, bold=True)
 
-# --- Canvas ---
+# холст
 canvas_offset = (100, 150)
 canvas = p.Surface((800, 600))
 canvas.fill((255, 255, 255))
 
-# --- State Variables ---
+# переменные 
 color = (0, 0, 0)
 brush_size = 3
 tool = "draw"
@@ -35,9 +34,8 @@ text_input = ""
 text_pos = None
 last_draw_pos = None
 
-# --- UI Definitions ---
 btns = {
-    # Colors
+    # цвета
     "black":   {"rect": p.Rect(10, 10, 40, 40), "color": (0,0,0)},
     "red":     {"rect": p.Rect(60, 10, 40, 40), "color": (255,0,0)},
     "green":   {"rect": p.Rect(110, 10, 40, 40), "color": (0,255,0)},
@@ -47,7 +45,7 @@ btns = {
     "cyan":    {"rect": p.Rect(310, 10, 40, 40), "color": (0,255,255)},
     "eraser":  {"rect": p.Rect(370, 10, 60, 40), "color": (255,255,255), "label": "eraser"},
     
-    # Shapes & Tools (Row 2)
+    # фигуры и инструменты
     "draw":    {"rect": p.Rect(10, 60, 70, 40), "label": "pencil"},
     "line":    {"rect": p.Rect(90, 60, 70, 40), "label": "line"},
     "square":  {"rect": p.Rect(170, 60, 70, 40), "label": "rectangle"},
@@ -58,7 +56,7 @@ btns = {
     "fill":    {"rect": p.Rect(570, 60, 70, 40), "label": "fill"},
     "text":    {"rect": p.Rect(650, 60, 70, 40), "label": "text"},
     
-    # Brush Controls
+    # управ кисточкой
     "minus":   {"rect": p.Rect(740, 60, 40, 40), "label": "-"},
     "plus":    {"rect": p.Rect(790, 60, 40, 40), "label": "+"},
     "clear":   {"rect": p.Rect(910, 10, 70, 40), "label": "clear"}
@@ -92,7 +90,7 @@ def get_shape_points(shape_type, start, end):
         return [(x1 + w/2, y1), (x2, y1 + h/2), (x1 + w/2, y2), (x1, y1 + h/2)]
     return []
 
-# --- Main Loop ---
+# глав цикл
 running = True
 while running:
     mx, my = p.mouse.get_pos()
@@ -103,18 +101,18 @@ while running:
             running = False
 
         if event.type == p.KEYDOWN:
-            # 3.2 Brush Size Shortcuts
+            # 3.2 размеры кисточки
             if event.key == p.K_1: brush_size = 2
             if event.key == p.K_2: brush_size = 5
             if event.key == p.K_3: brush_size = 10
             
-            # 3.4 Save Canvas (Ctrl+S)
+            # 3.4 сохранить холст(Ctrl+S)
             if event.key == p.K_s and (p.key.get_mods() & p.KMOD_CTRL):
                 fname = f"paint_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
                 p.image.save(canvas, fname)
                 print(f"Canvas saved as {fname}")
 
-            # 3.5 Text Tool Logic
+            # 3.5 текстовой инструмент
             if tool == "text" and text_pos:
                 if event.key == p.K_RETURN:
                     txt_surf = large_font.render(text_input, True, color)
@@ -153,7 +151,7 @@ while running:
 
         if event.type == p.MOUSEBUTTONUP:
             if drawing:
-                # Commit shapes to canvas
+                # фигуры на холст
                 if tool == "line":
                     p.draw.line(canvas, color, start_pos, (cx, cy), brush_size)
                 elif tool == "circle":
@@ -170,7 +168,7 @@ while running:
                 drawing = False
                 start_pos = None
 
-    # 3.1 Freehand (Pencil) Tool
+    # 3.1 ручка
     if drawing and tool == "draw":
         if 0 <= cx < 800 and 0 <= cy < 600:
             p.draw.line(canvas, color, last_draw_pos, (cx, cy), brush_size)
@@ -178,13 +176,13 @@ while running:
             p.draw.circle(canvas, color, (cx, cy), brush_size // 2)
             last_draw_pos = (cx, cy)
 
-    # --- DRAWING EVERYTHING ---
+    # фил
     screen.fill((230, 230, 230))
     
-    # UI Buttons
+    # кнопки
     for name, info in btns.items():
         bg = info.get("color", (255, 255, 255))
-        if tool == name: bg = (255, 255, 0) # Highlight active
+        if tool == name: bg = (255, 255, 0) 
         
         p.draw.rect(screen, bg, info["rect"])
         p.draw.rect(screen, (0, 0, 0), info["rect"], 2)
@@ -194,16 +192,16 @@ while running:
             screen.blit(txt, (info["rect"].centerx - txt.get_width()//2, 
                              info["rect"].centery - txt.get_height()//2))
 
-    # UI Status Info
+    # инфо статус
     screen.blit(large_font.render(f"Width: {brush_size}", True, (0,0,0)), (840, 65))
     p.draw.rect(screen, color, (940, 60, 40, 40))
     p.draw.rect(screen, (0,0,0), (940, 60, 40, 40), 2)
 
-    # Canvas Rendering
+    # рендер холста
     screen.blit(canvas, canvas_offset)
     p.draw.rect(screen, (0,0,0), (canvas_offset[0], canvas_offset[1], 800, 600), 2)
 
-    # --- LIVE PREVIEWS ---
+    # предварительные показы
     if drawing and start_pos and tool != "draw":
         ps = (start_pos[0] + canvas_offset[0], start_pos[1] + canvas_offset[1])
         if tool == "line":
@@ -218,7 +216,7 @@ while running:
             pts = get_shape_points(tool, ps, (mx, my))
             if len(pts) > 2: p.draw.polygon(screen, color, pts, 1)
 
-    # Text Tool Live Typing
+    # писать
     if tool == "text" and text_pos:
         cursor_txt = text_input + "|"
         txt_prev = large_font.render(cursor_txt, True, color)

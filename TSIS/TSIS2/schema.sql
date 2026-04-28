@@ -1,15 +1,15 @@
--- 1. Groups / categories ─────────────────────────────────────
+-- 1. категории
 CREATE TABLE IF NOT EXISTS groups (
     id   SERIAL PRIMARY KEY,
     name VARCHAR(50) UNIQUE NOT NULL
 );
 
--- Seed default groups
+-- группы по умолч
 INSERT INTO groups (name) VALUES
     ('Family'), ('Work'), ('Friend'), ('Other')
 ON CONFLICT (name) DO NOTHING;
 
--- 2. Contacts (base table) ───────────────────────────────────
+-- 2. контакты
 CREATE TABLE IF NOT EXISTS contacts (
     id         SERIAL PRIMARY KEY,
     first_name VARCHAR(50)  NOT NULL,
@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS contacts (
     created_at TIMESTAMP DEFAULT NOW()
 );
 
--- Add new columns to an existing contacts table (idempotent)
+-- добав новый колумн ту существу таблица
 DO $$
 BEGIN
     IF NOT EXISTS (
@@ -46,7 +46,7 @@ BEGIN
 END
 $$;
 
--- 3. Phones (1-to-many with contacts) ────────────────────────
+-- 3. телефоны
 CREATE TABLE IF NOT EXISTS phones (
     id         SERIAL PRIMARY KEY,
     contact_id INTEGER NOT NULL REFERENCES contacts(id) ON DELETE CASCADE,

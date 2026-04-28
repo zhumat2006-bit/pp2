@@ -1,5 +1,4 @@
--- 1. add_phone ────────────────────────────────────────────────
---    Adds a phone number to an existing contact looked up by name.
+-- 1. добав тел ном
 CREATE OR REPLACE PROCEDURE add_phone(
     p_contact_name VARCHAR,
     p_phone        VARCHAR,
@@ -9,7 +8,7 @@ LANGUAGE plpgsql AS $$
 DECLARE
     v_contact_id INTEGER;
 BEGIN
-    -- Resolve contact by first_name (or "first last" composite)
+    -- по именам
     SELECT id INTO v_contact_id
     FROM contacts
     WHERE LOWER(first_name || COALESCE(' ' || last_name, '')) = LOWER(TRIM(p_contact_name))
@@ -32,9 +31,7 @@ END;
 $$;
 
 
--- 2. move_to_group ───────────────────────────────────────────
---    Moves a contact to the specified group, creating the group
---    if it does not already exist.
+-- 2. добавлять контакт в группу
 CREATE OR REPLACE PROCEDURE move_to_group(
     p_contact_name VARCHAR,
     p_group_name   VARCHAR
@@ -44,7 +41,7 @@ DECLARE
     v_contact_id INTEGER;
     v_group_id   INTEGER;
 BEGIN
-    -- Resolve contact
+    -- контакт
     SELECT id INTO v_contact_id
     FROM contacts
     WHERE LOWER(first_name || COALESCE(' ' || last_name, '')) = LOWER(TRIM(p_contact_name))
@@ -69,9 +66,7 @@ END;
 $$;
 
 
--- 3. search_contacts ─────────────────────────────────────────
---    Full-field search: first/last name, email, and ALL phones
---    in the phones table.  Returns a result set.
+-- 3. искать контакты
 CREATE OR REPLACE FUNCTION search_contacts(p_query TEXT)
 RETURNS TABLE (
     id         INTEGER,

@@ -15,9 +15,7 @@ import psycopg2.extras
 
 from connect import get_connection
 
-# ──────────────────────────────────────────────────────────────
-# Helpers
-# ──────────────────────────────────────────────────────────────
+# хелперы
 
 def _conn():
     return get_connection()
@@ -93,9 +91,9 @@ def _fetch_contacts_with_phones(conn, contact_ids):
     return [contacts[cid] for cid in contact_ids if cid in contacts]
 
 
-# ──────────────────────────────────────────────────────────────
-# 3.1  Schema initialisation
-# ──────────────────────────────────────────────────────────────
+
+# 3.1  cхема
+
 
 def init_schema():
     """Apply schema.sql and procedures.sql to the connected DB."""
@@ -111,9 +109,7 @@ def init_schema():
     print("✅  Schema and procedures applied.")
 
 
-# ──────────────────────────────────────────────────────────────
-# 3.2  Advanced console search & filter
-# ──────────────────────────────────────────────────────────────
+# 3.2  поиск и фильтр
 
 def filter_by_group():
     """Show contacts in a selected group."""
@@ -133,7 +129,7 @@ def filter_by_group():
 
     with _conn() as conn:
         with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
-            # accept id or name
+            # принять айди или имя
             if choice.isdigit():
                 cur.execute(
                     """
@@ -204,7 +200,7 @@ def paginated_browse():
         offset = page * page_size
         with _conn() as conn:
             with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
-                # Re-use the pagination function from Practice 8
+                # резделительная функ
                 cur.execute(
                     "SELECT * FROM get_contacts_paginated(%s, %s)",
                     (page_size, offset),
@@ -234,9 +230,7 @@ def paginated_browse():
             break
 
 
-# ──────────────────────────────────────────────────────────────
-# 3.3  Import / Export
-# ──────────────────────────────────────────────────────────────
+# 3.3  импорт экспорт
 
 def export_to_json(filepath="contacts_export.json"):
     """Export all contacts (with phones and group) to a JSON file."""
@@ -246,7 +240,7 @@ def export_to_json(filepath="contacts_export.json"):
             ids = [r["id"] for r in cur.fetchall()]
         contacts = _fetch_contacts_with_phones(conn, ids)
 
-    # Make dates JSON-serialisable
+    # делать даты дж сон сериальными
     for c in contacts:
         if isinstance(c.get("birthday"), date):
             c["birthday"] = c["birthday"].isoformat()
@@ -284,11 +278,11 @@ def _upsert_contact_from_dict(conn, data, on_duplicate="ask"):
         if action == "skip":
             print(f"     → Skipped.")
             return
-        # overwrite: delete and re-insert to cascade phones
+        # перезапись
         with conn.cursor() as cur:
             cur.execute("DELETE FROM contacts WHERE id = %s", (existing["id"],))
 
-    # Resolve group
+    # ресолв группы
     group_id = None
     group_name = (data.get("group_name") or data.get("group") or "").strip()
     if group_name:
@@ -315,9 +309,9 @@ def _upsert_contact_from_dict(conn, data, on_duplicate="ask"):
         )
         contact_id = cur.fetchone()[0]
 
-    # Insert phones
+    # добав телефон
     phones = data.get("phones", [])
-    # Also accept flat single-phone fields (from CSV)
+    # также принимать csv
     if not phones and data.get("phone"):
         phones = [{"phone": data["phone"], "type": data.get("phone_type", "mobile")}]
 
@@ -381,9 +375,7 @@ def import_from_csv(filepath=None):
     print(f"✅  CSV import complete: processed {imported} rows.")
 
 
-# ──────────────────────────────────────────────────────────────
-# 3.4  Stored-procedure wrappers
-# ──────────────────────────────────────────────────────────────
+# 3.4  оболочки хранимых процедур
 
 def call_add_phone():
     """Console wrapper for the add_phone stored procedure."""
@@ -420,9 +412,7 @@ def call_search_contacts():
     _print_contacts(results)
 
 
-# ──────────────────────────────────────────────────────────────
-# Main menu
-# ──────────────────────────────────────────────────────────────
+# глав меню
 
 MENU = """
 ╔══════════════════════════════════════════════════╗
