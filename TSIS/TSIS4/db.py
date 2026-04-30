@@ -1,4 +1,4 @@
-# db.py — работа с PostgreSQL через psycopg2
+# работа с PostgreSQL 
 from datetime import datetime
 import psycopg2
 from psycopg2 import sql
