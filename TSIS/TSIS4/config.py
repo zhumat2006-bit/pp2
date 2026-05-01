@@ -39,6 +39,6 @@ DB_CONFIG = {
     "host": "localhost",
     "database": "snake_db",
     "user": "zhumat",
-    "password": "",
-    "port": 5432,
+    "password": "Zhum@t2006",
+    "port": 5433,
 }
