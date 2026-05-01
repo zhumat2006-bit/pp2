@@ -1,0 +1,54 @@
+[
+    {
+        "name": "Aigerim",
+        "email": "aigerim@mail.com",
+        "birthday": "2005-01-30",
+        "group": "Family",
+        "phones": [
+            {
+                "phone": "87023334455",
+                "type": "home"
+            }
+        ]
+    },
+    {
+        "name": "Aito",
+        "email": "kaldybek.aitolkyn@gmail.com",
+        "birthday": "2008-04-12",
+        "group": "Friend",
+        "phones": [
+            {
+                "phone": "87719742008",
+                "type": "mobile"
+            },
+            {
+                "phone": "87054929880",
+                "type": "home"
+            }
+        ]
+    },
+    {
+        "name": "Aruzhan",
+        "email": "aruzhan@gmail.com",
+        "birthday": "2005-04-12",
+        "group": "Friend",
+        "phones": [
+            {
+                "phone": "87011234567",
+                "type": "mobile"
+            }
+        ]
+    },
+    {
+        "name": "Dias",
+        "email": "dias@work.com",
+        "birthday": "2004-10-02",
+        "group": "Work",
+        "phones": [
+            {
+                "phone": "87075554433",
+                "type": "work"
+            }
+        ]
+    }
+]
