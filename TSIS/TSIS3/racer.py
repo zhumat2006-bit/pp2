@@ -1,9 +1,9 @@
-# Основная логика гонки.
+# Основная логика гонки
 import os
 import random
 import pygame
 
-# Размер окна и количество кадров в секунду.
+# Размер окна и количество кадров в секунду
 WIDTH = 400
 HEIGHT = 600
 FPS = 60
@@ -24,21 +24,21 @@ BASE_DIR = os.path.dirname(__file__)
 ASSET_DIR = os.path.join(BASE_DIR, "assets")
 OLD_IMAGE_DIR = os.path.join(BASE_DIR, "images")
 
-# Границы дороги и координаты полос.
+# Границы дороги и координаты полос
 ROAD_LEFT = 80
 ROAD_RIGHT = WIDTH - 80
 ROAD_WIDTH = ROAD_RIGHT - ROAD_LEFT
 LANES = [100, 175, 250]
 FINISH_DISTANCE = 3000
 
-# Настройки сложности.
+# Настройки сложности
 DIFFICULTY_DATA = {
     "easy": {"enemy_spawn": 105, "obstacle_spawn": 145, "speed": 4},
     "normal": {"enemy_spawn": 80, "obstacle_spawn": 115, "speed": 5},
     "hard": {"enemy_spawn": 55, "obstacle_spawn": 85, "speed": 6}
 }
 
-# Цвета машины игрока.
+# Цвета машины игрока
 CAR_TINTS = {
     "blue": BLUE,
     "red": RED,
@@ -46,23 +46,22 @@ CAR_TINTS = {
 }
 
 
-# Загружает картинку из assets или images.
+# Загружает картинку из assets
 def load_image(name, size, fallback_color):
-    # Сначала ищем в TSIS3/assets, потом в старой папке images.
     for folder in (ASSET_DIR, OLD_IMAGE_DIR):
         path = os.path.join(folder, name)
         if os.path.exists(path):
             image = pygame.image.load(path).convert_alpha()
             return pygame.transform.scale(image, size)
 
-    # Если картинки нет, рисуем обычный прямоугольник.
+    # Если картинки нет, рисуем обычный прямоугольник
     image = pygame.Surface(size, pygame.SRCALPHA)
     pygame.draw.rect(image, fallback_color, image.get_rect(), border_radius=8)
     pygame.draw.rect(image, WHITE, image.get_rect(), 2, border_radius=8)
     return image
 
 
-# Добавляет цветовой оттенок к картинке.
+# Добавляет цветовой оттенок к картинке
 def tint_image(image, color):
     result = image.copy()
     tint = pygame.Surface(result.get_size(), pygame.SRCALPHA)
@@ -71,22 +70,22 @@ def tint_image(image, color):
     return result
 
 
-# Машина игрока.
+# Машина игрока
 class Player(pygame.sprite.Sprite):
     def __init__(self, settings):
         super().__init__()
-        # Загружаем картинку игрока.
+        # Загружаем картинку игрока
         base_image = load_image("player.png", (50, 90), BLUE)
         color = CAR_TINTS.get(settings.get("car_color", "blue"), BLUE)
         self.image = tint_image(base_image, color)
-        # Ставим машину внизу дороги.
+        # Ставим машину внизу дороги
         self.rect = self.image.get_rect(center=(WIDTH // 2, HEIGHT - 100))
         self.speed = 6
         self.shield = False
         self.repair = 0
 
-    # Двигает игрока влево и вправо.
-    # Обновляет всю игру каждый кадр.
+    # Двигает игрока влево и вправо
+    # Обновляет всю игру каждый кадр
     def update(self):
         keys = pygame.key.get_pressed()
 
@@ -95,14 +94,14 @@ class Player(pygame.sprite.Sprite):
         if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
             self.rect.x += self.speed
 
-        # Не даем машине выехать за дорогу.
+        # Не даем машине выехать за дорогу
         if self.rect.left < ROAD_LEFT:
             self.rect.left = ROAD_LEFT
         if self.rect.right > ROAD_RIGHT:
             self.rect.right = ROAD_RIGHT
 
 
-# Вражеская машина.
+# Вражеская машина
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, speed):
         super().__init__()
@@ -110,18 +109,18 @@ class Enemy(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(midtop=(random.choice(LANES), -120))
         self.speed = speed + random.randint(0, 2)
 
-    # Обновляет всю игру каждый кадр.
+    # Обновляет всю игру каждый кадр
     def update(self):
         self.rect.y += self.speed
         if self.rect.top > HEIGHT:
             self.kill()
 
 
-# Монета для очков.
+# Монета для очков
 class Coin(pygame.sprite.Sprite):
     def __init__(self, speed):
         super().__init__()
-        # Чем больше weight, тем больше очков.
+        # Чем больше weight, тем больше очков
         self.weight = random.randint(1, 3)
         self.value = self.weight
         self.image = load_image("coin.png", (32, 32), YELLOW)
@@ -135,7 +134,7 @@ class Coin(pygame.sprite.Sprite):
         self.speed = speed
         self.life = FPS * 6
 
-    # Обновляет всю игру каждый кадр.
+    # Обновляет всю игру каждый кадр
     def update(self):
         self.rect.y += self.speed
         self.life -= 1
@@ -143,11 +142,11 @@ class Coin(pygame.sprite.Sprite):
             self.kill()
 
 
-# Препятствия на дороге.
+# Препятствия на дороге
 class Obstacle(pygame.sprite.Sprite):
     def __init__(self, speed):
         super().__init__()
-        # Случайно выбираем тип препятствия.
+        # Случайно выбираем тип препятствия
         self.kind = random.choice(["barrier", "oil", "pothole", "speed_bump"])
         self.speed = speed
         self.image = pygame.Surface((55, 35), pygame.SRCALPHA)
@@ -167,18 +166,18 @@ class Obstacle(pygame.sprite.Sprite):
 
         self.rect = self.image.get_rect(center=(random.choice(LANES), -50))
 
-    # Обновляет всю игру каждый кадр.
+    # Обновляет всю игру каждый кадр
     def update(self):
         self.rect.y += self.speed
         if self.rect.top > HEIGHT:
             self.kill()
 
 
-# Усиления: nitro, shield, repair.
+# Усиления: nitro, shield, repair
 class PowerUp(pygame.sprite.Sprite):
     def __init__(self, speed):
         super().__init__()
-        # Выбираем случайный power-up.
+        # Выбираем случайный power-up
         self.kind = random.choice(["nitro", "shield", "repair"])
         self.image = pygame.Surface((36, 36), pygame.SRCALPHA)
 
@@ -202,7 +201,7 @@ class PowerUp(pygame.sprite.Sprite):
         self.speed = speed
         self.life = FPS * 5
 
-    # Обновляет всю игру каждый кадр.
+    # Обновляет всю игру каждый кадр
     def update(self):
         self.rect.y += self.speed
         self.life -= 1
@@ -210,7 +209,7 @@ class PowerUp(pygame.sprite.Sprite):
             self.kill()
 
 
-# Двигающееся препятствие.
+# Двигающееся препятствие
 class MovingBarrier(pygame.sprite.Sprite):
     def __init__(self, speed):
         super().__init__()
@@ -221,7 +220,7 @@ class MovingBarrier(pygame.sprite.Sprite):
         self.speed = speed
         self.dx = random.choice([-2, 2])
 
-    # Обновляет всю игру каждый кадр.
+    # Обновляет всю игру каждый кадр
     def update(self):
         self.rect.y += self.speed
         self.rect.x += self.dx
@@ -233,7 +232,7 @@ class MovingBarrier(pygame.sprite.Sprite):
             self.kill()
 
 
-# Главный класс игры.
+# Главный класс игры
 class RacerGame:
     def __init__(self, screen, clock, username, settings):
         self.screen = screen
@@ -245,7 +244,7 @@ class RacerGame:
         self.road_img = self.load_road()
         self.reset()
 
-    # Загружает фон дороги.
+    # Загружает фон дороги
     def load_road(self):
         for folder in (ASSET_DIR, OLD_IMAGE_DIR):
             path = os.path.join(folder, "road.png")
@@ -254,7 +253,7 @@ class RacerGame:
                 return pygame.transform.scale(image, (WIDTH, HEIGHT))
         return None
 
-    # Сбрасывает игру перед новым запуском.
+    # Сбрасывает игру перед новым запуском
     def reset(self):
         self.player = Player(self.settings)
         self.player_group = pygame.sprite.GroupSingle(self.player)
@@ -281,33 +280,33 @@ class RacerGame:
         self.power_time = 0
         self.nitro_bonus = 0
 
-    # Возвращает настройки выбранной сложности.
+    # Возвращает настройки выбранной сложности
     def difficulty(self):
         return DIFFICULTY_DATA.get(self.settings.get("difficulty", "normal"), DIFFICULTY_DATA["normal"])
 
-    # Считает текущую скорость игры.
+    # Считает текущую скорость игры
     def current_speed(self):
         level_bonus = int(self.distance // 700)
         return self.difficulty()["speed"] + level_bonus + self.nitro_bonus
 
-    # Проверяет, можно ли создавать объект рядом с игроком.
+    # Проверяет, можно ли создавать объект рядом с игроком
     def safe_to_spawn(self, x):
         return abs(self.player.rect.centerx - x) > 45 or self.player.rect.y < HEIGHT - 180
 
-    # Создает врага.
+    # Создает врага
     def spawn_enemy(self):
         speed = self.current_speed()
         enemy = Enemy(speed)
         if self.safe_to_spawn(enemy.rect.centerx):
             self.enemies.add(enemy)
 
-    # Создает препятствие.
+    # Создает препятствие
     def spawn_obstacle(self):
         obstacle = Obstacle(self.current_speed())
         if self.safe_to_spawn(obstacle.rect.centerx):
             self.obstacles.add(obstacle)
 
-    # Таймеры отвечают за появление объектов.
+    # Таймеры отвечают за появление объектов
     def update_timers(self):
         speed = self.current_speed()
         difficulty = self.difficulty()
@@ -339,7 +338,7 @@ class RacerGame:
             self.event_timer = 0
             self.events.add(MovingBarrier(speed))
 
-    # Проверяет сбор монет и power-ups.
+    # Проверяет сбор монет и power-ups
     def collect_items(self):
         coins = pygame.sprite.spritecollide(self.player, self.coins_group, True)
         for coin in coins:
@@ -348,7 +347,7 @@ class RacerGame:
 
         powerups = pygame.sprite.spritecollide(self.player, self.powerups, True)
         for powerup in powerups:
-            # Новый power-up включается, если другого нет.
+            # Новый power-up включается, если другого нет
             if self.active_power is None:
                 self.active_power = powerup.kind
 
@@ -367,7 +366,7 @@ class RacerGame:
                     if len(self.obstacles) > 0:
                         self.obstacles.sprites()[0].kill()
 
-    # Отсчитывает время действия nitro.
+    # Отсчитывает время действия nitro
     def handle_power_timer(self):
         if self.active_power == "nitro":
             self.power_time -= 1
@@ -375,20 +374,20 @@ class RacerGame:
                 self.active_power = None
                 self.nitro_bonus = 0
 
-    # Проверяет столкновения с объектами.
+    # Проверяет столкновения с объектами
     def handle_collision_group(self, group):
         hit = pygame.sprite.spritecollideany(self.player, group)
         if not hit:
             return
 
-        # Щит защищает от одного удара.
+        # Щит защищает от одного удара
         if self.player.shield:
             hit.kill()
             self.player.shield = False
             self.active_power = None
             return
 
-        # Repair убирает одно столкновение.
+        # Repair убирает одно столкновение
         if self.player.repair > 0:
             hit.kill()
             self.player.repair -= 1
@@ -396,7 +395,7 @@ class RacerGame:
 
         self.game_over = True
 
-    # Обновляет всю игру каждый кадр.
+    # Обновляет всю игру каждый кадр
     def update(self):
         if self.game_over or self.finished:
             return
@@ -411,7 +410,7 @@ class RacerGame:
         self.collect_items()
         self.handle_power_timer()
 
-        # Проверяем столкновения с машинами и препятствиями.
+        # Проверяем столкновения с машинами и препятствиями
         self.handle_collision_group(self.enemies)
         self.handle_collision_group(self.obstacles)
         self.handle_collision_group(self.events)
@@ -419,12 +418,12 @@ class RacerGame:
         self.distance += self.current_speed() / 5
         self.score += 1
 
-        # Если дошли до финиша, игра закончена победой.
+        # Если дошли до финиша, игра закончена победой
         if self.distance >= FINISH_DISTANCE:
             self.finished = True
             self.score += 500
 
-    # Рисует дорогу.
+    # Рисует дорогу
     def draw_road(self):
         if self.road_img:
             self.screen.blit(self.road_img, (0, 0))
@@ -436,7 +435,7 @@ class RacerGame:
             for y in range(0, HEIGHT, 80):
                 pygame.draw.line(self.screen, WHITE, (WIDTH // 2, y), (WIDTH // 2, y + 40), 3)
 
-    # Рисует score, coins, distance и power-up.
+    # Рисует score, coins, distance и power-up
     def draw_hud(self):
         remaining = max(0, int(FINISH_DISTANCE - self.distance))
         texts = [
@@ -463,7 +462,7 @@ class RacerGame:
         surface = self.font.render(power_text, True, YELLOW)
         self.screen.blit(surface, (10, y))
 
-    # Рисует все объекты на экране.
+    # Рисует все объекты на экране
     def draw(self):
         self.draw_road()
         self.coins_group.draw(self.screen)
@@ -474,13 +473,13 @@ class RacerGame:
         self.player_group.draw(self.screen)
         self.draw_hud()
 
-        # Щит защищает от одного удара.
+        # Щит защищает от одного удара
         if self.player.shield:
             pygame.draw.circle(self.screen, CYAN, self.player.rect.center, 55, 3)
 
         pygame.display.flip()
 
-    # Основной игровой цикл.
+    # Основной игровой цикл
     def run(self):
         while True:
             self.clock.tick(FPS)
