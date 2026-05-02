@@ -36,7 +36,7 @@ IMAGE_FILES = {
 
 # Данные PostgreSQL. Измени под свой компьютер.
 DB_CONFIG = {
-    "host":     "localhost",
+    "host":     "/tmp",
     "database": "snake_db",
     "user":     "zhumat",
     "password": "",
